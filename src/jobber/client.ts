@@ -1,4 +1,5 @@
 import type { Config } from "../config.js";
+import { saveStoredTokens } from "./token-store.js";
 
 export interface GraphQLErrorItem {
   message: string;
@@ -47,6 +48,32 @@ export class JobberClient {
 
   constructor(private readonly config: Config) {
     this.accessToken = stripBearer(config.accessToken);
+  }
+
+  /** Apply credentials obtained at runtime (the `authenticate` tool). */
+  setCredentials(tokens: {
+    accessToken: string;
+    refreshToken?: string;
+    clientId?: string;
+    clientSecret?: string;
+  }): void {
+    this.accessToken = stripBearer(tokens.accessToken);
+    this.config.refreshToken = tokens.refreshToken;
+    if (tokens.clientId) this.config.clientId = tokens.clientId;
+    if (tokens.clientSecret) this.config.clientSecret = tokens.clientSecret;
+    this.refreshedOnce = false;
+  }
+
+  get hasCredentials(): boolean {
+    return this.accessToken != null || this.config.refreshToken != null;
+  }
+
+  get authorizeUrl(): string {
+    return this.config.authorizeUrl;
+  }
+
+  get tokenUrl(): string {
+    return this.config.tokenUrl;
   }
 
   /** Account country (fetched once, cached) - drives currency selection. */
@@ -112,7 +139,8 @@ export class JobberClient {
     for (let attempt = 0; ; attempt++) {
       if (!this.accessToken) {
         throw new JobberApiError(
-          "No Jobber access token configured. Run `npm run auth` or set JOBBER_ACCESS_TOKEN.",
+          "Not connected to Jobber yet. Ask the user to call the `authenticate` tool " +
+            "(or set JOBBER_ACCESS_TOKEN in the environment).",
         );
       }
 
@@ -200,6 +228,14 @@ export class JobberClient {
       }
       this.accessToken = body.access_token;
       if (body.refresh_token) this.config.refreshToken = body.refresh_token;
+      // Persist rotated tokens so a restart doesn't lose them (Jobber rotates
+      // refresh tokens on use — the old one is invalid after this exchange).
+      saveStoredTokens({
+        accessToken: body.access_token,
+        refreshToken: this.config.refreshToken,
+        clientId,
+        clientSecret,
+      });
       console.error("[jobber-mcp] access token refreshed");
       return true;
     } catch (cause) {

@@ -13,6 +13,7 @@ A read-only **MCP server** connecting AI assistants (Claude, ChatGPT, Gemini, Co
 
 | Tool | What it does |
 |---|---|
+| `authenticate` | Connect your Jobber account — one time, in-chat, via browser OAuth |
 | `search_jobs` | Find jobs (work orders) by client, status, date range; paginated |
 | `get_unpaid_invoices` | Overdue/balanced-owing invoices, days overdue, total AR outstanding |
 | `get_client_details` | Client profile + outstanding balance + recent jobs and invoices |
@@ -44,14 +45,29 @@ integrations:
 
 ## Requirements
 
-- Node.js 18.17+
-- A Jobber account (a free trial works fine)
-- A free developer app from https://developer.getjobber.com
+- For the Claude Desktop extension: nothing but Claude Desktop and a Jobber account
+- For other MCP clients: Node.js 18.17+
+- A free developer app from https://developer.getjobber.com (created during setup, ~5 minutes)
 
-## Setup
+## Install
+
+### Claude Desktop — no coding (easiest)
+
+1. Download `jobber-mcp.mcpb` from this repo's [releases](https://github.com/buildminimal/jobber-mcp/releases).
+2. In Claude Desktop: **Settings → Extensions → Install extension** → select the file.
+3. In a chat, say *"authenticate with Jobber"* and follow the one-time setup: create a free app at https://developer.getjobber.com with read-only scopes (Clients, Jobs, Quotes, Scheduled Items, Invoices — leave the Callback URL blank), then paste the app's Client ID and Secret when asked.
+4. Your browser opens; log into Jobber and approve. Done — try *"Which invoices are overdue?"*
+
+No Node.js, no terminal, no config files. Tokens are stored locally at `~/.jobber-mcp/tokens.json` and refreshed automatically.
+
+> Building the extension yourself: `npm run build:extension` produces `dist/jobber-mcp.mcpb` from source.
+
+### Any other MCP client (developers)
+
+Works with anything that speaks MCP over stdio (Cursor, VS Code Copilot, ZCode, Claude Code, …).
 
 1. **Create a Jobber developer app** at https://developer.getjobber.com (free). Note your `CLIENT ID` / `CLIENT SECRET`. Enable **read-only** scopes for Clients, Jobs, Quotes, Scheduled Items, and Invoices. Leave the Callback URL blank - Jobber allows `localhost` redirects automatically on any port.
-2. **Install & configure:**
+2. **Install & configure** (or skip this entirely and just call the `authenticate` tool from your assistant):
    ```bash
    git clone https://github.com/buildminimal/jobber-mcp.git
    cd jobber-mcp

@@ -194,6 +194,7 @@ const cases: Case[] = [
   { name: "get_client_details", args: { client_id: "nope" }, expect: "No client found", expectError: true },
   { name: "get_schedule", args: {}, expect: "Faucet repair", notExpect: "filtered by server-side range" },
   { name: "get_quotes", args: {}, expect: "awaiting_response" },
+  { name: "authenticate", args: {}, expect: "developer.getjobber.com", expectError: true },
   { name: "get_quotes", args: { status: "draft" }, expect: "300.00", notExpect: "approved" },
   {
     name: "draft_client_message",

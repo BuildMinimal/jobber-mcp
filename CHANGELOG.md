@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows
 [SemVer](https://semver.org/).
 
+## [1.1.0] - 2026-09-28
+
+### Added
+
+- **Claude Desktop extension (`.mcpb`)**: single-file, double-click install for
+  non-technical users — no Node.js, no terminal, no config files
+  (`npm run build:extension` builds it from source)
+- **`authenticate` tool**: connect a Jobber account from inside the chat —
+  browser OAuth flow with a localhost callback; tokens persist to
+  `~/.jobber-mcp/tokens.json` and are picked up automatically on restart
+- The server now starts without credentials (essential for the extension
+  flow); tools return friendly connect-first guidance instead of failing at
+  startup
+- Refreshed tokens are persisted on rotation, surviving restarts
+
 ## [1.0.0] - 2026-09-28
 
 First public release. Read-only MCP server connecting AI assistants to Jobber

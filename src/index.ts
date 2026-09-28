@@ -7,13 +7,13 @@ import { registerTools } from "./tools.js";
 
 const cfg = loadConfig();
 if (!cfg.accessToken && !cfg.refreshToken) {
+  // Not an error: the user can connect from inside the assistant by calling
+  // the `authenticate` tool (essential for the Claude Desktop extension,
+  // where no terminal is involved).
   console.error(
-    "jobber-mcp: missing Jobber credentials.\n" +
-      "Set JOBBER_ACCESS_TOKEN (or JOBBER_REFRESH_TOKEN plus JOBBER_CLIENT_ID/JOBBER_CLIENT_SECRET) " +
-      "in the environment or .env, or run `npm run auth` to obtain tokens.\n" +
-      "See README.md → Setup.",
+    "[jobber-mcp] no stored Jobber credentials yet — tools will ask the user " +
+      "to run the `authenticate` tool to connect their account.",
   );
-  process.exit(1);
 }
 
 const server = new McpServer(

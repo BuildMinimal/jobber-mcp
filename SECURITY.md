@@ -20,7 +20,7 @@
 
 If you find a security issue, please report it privately:
 
-- Email: aj.techahead@gmail.com
+- Email: arkdezin@gmail.com
 - Or open a GitHub security advisory ("Report a vulnerability" under the
   Security tab)
 

@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { loadStoredTokens } from "./jobber/token-store.js";
 
 /** Minimal .env loader - zero dependencies, never overrides real env vars. */
 function loadDotEnv(): void {
@@ -42,11 +43,15 @@ export interface Config {
 
 export function loadConfig(): Config {
   const apiOrigin = (process.env.JOBBER_API_ORIGIN ?? "https://api.getjobber.com").replace(/\/+$/, "");
+  // Environment wins; ~/.jobber-mcp/tokens.json (written by `npm run auth`
+  // or the authenticate tool) is the fallback so credentials survive
+  // restarts without configuration.
+  const stored = loadStoredTokens();
   return {
-    accessToken: process.env.JOBBER_ACCESS_TOKEN,
-    refreshToken: process.env.JOBBER_REFRESH_TOKEN,
-    clientId: process.env.JOBBER_CLIENT_ID,
-    clientSecret: process.env.JOBBER_CLIENT_SECRET,
+    accessToken: process.env.JOBBER_ACCESS_TOKEN ?? stored.accessToken,
+    refreshToken: process.env.JOBBER_REFRESH_TOKEN ?? stored.refreshToken,
+    clientId: process.env.JOBBER_CLIENT_ID ?? stored.clientId,
+    clientSecret: process.env.JOBBER_CLIENT_SECRET ?? stored.clientSecret,
     apiOrigin,
     apiVersion: process.env.JOBBER_API_VERSION ?? "2026-05-12",
     graphqlUrl: process.env.JOBBER_API_URL ?? `${apiOrigin}/api/graphql`,

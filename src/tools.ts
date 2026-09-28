@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { JobberApiError, JobberClient } from "./jobber/client.js";
+import { runOAuthFlow } from "./jobber/oauth.js";
+import { saveStoredTokens, tokensFilePath } from "./jobber/token-store.js";
 import {
   INVOICE_STATUSES,
   JOB_STATUSES,
@@ -571,6 +573,73 @@ export function registerTools(
         );
       } catch (err) {
         return fail(errorMessage(err));
+      }
+    },
+  );
+
+  /* ----- authenticate ----- */
+  server.registerTool(
+    "authenticate",
+    {
+      title: "Connect your Jobber account",
+      description:
+        "Connect this assistant to the user's Jobber account via OAuth (one time). " +
+        "PREREQUISITE the user must have done once: create a free app at https://developer.getjobber.com " +
+        "and enable READ-ONLY scopes for Clients, Jobs, Quotes, Scheduled Items and Invoices " +
+        "(leave the Callback URL blank - localhost is allowed automatically). " +
+        "Call this tool with that app's client_id and client_secret: it opens the user's browser to " +
+        "log in and approve, then stores tokens locally. If the tool is called without credentials, " +
+        "relay the setup instructions it returns to the user.",
+      inputSchema: {
+        client_id: z.string().optional().describe("Client ID from the user's Jobber developer app"),
+        client_secret: z
+          .string()
+          .optional()
+          .describe("Client secret from the user's Jobber developer app"),
+      },
+    },
+    async (args) => {
+      if (!args.client_id || !args.client_secret) {
+        return fail(
+          "Not connected yet. To set this up (one time, ~5 minutes, free):\n" +
+            "1. Go to https://developer.getjobber.com and create an app\n" +
+            "2. Enable READ-ONLY scopes: Clients, Jobs, Quotes, Scheduled Items, Invoices\n" +
+            "3. Leave the Callback URL empty (localhost redirects are allowed automatically)\n" +
+            "4. Call this tool again with that app's Client ID and Client Secret\n" +
+            "\nYour credentials stay on this machine; this tool only talks to Jobber.",
+        );
+      }
+      try {
+        const result = await runOAuthFlow({
+          clientId: args.client_id,
+          clientSecret: args.client_secret,
+          authorizeUrl: jobber.authorizeUrl,
+          tokenUrl: jobber.tokenUrl,
+        });
+        saveStoredTokens({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+          clientId: args.client_id,
+          clientSecret: args.client_secret,
+        });
+        jobber.setCredentials({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+          clientId: args.client_id,
+          clientSecret: args.client_secret,
+        });
+        // Verify the connection works and report the account context.
+        const country = await jobber.accountCountryCode();
+        return ok(
+          `Connected to Jobber successfully.${country ? ` Account country: ${country}.` : ""} ` +
+            `Tokens are stored locally at ${tokensFilePath()} and refresh automatically. ` +
+            `Try asking: "which invoices are overdue?"`,
+        );
+      } catch (err) {
+        return fail(
+          `Could not connect to Jobber: ${err instanceof Error ? err.message : String(err)}\n\n` +
+            "Ask the user to retry — the browser login must be completed within 10 minutes.",
+        );
       }
     },
   );
