@@ -17,7 +17,7 @@ if (!cfg.accessToken && !cfg.refreshToken) {
 }
 
 const server = new McpServer(
-  { name: "jobber-mcp", version: "0.1.0" },
+  { name: "jobber-mcp", version: "1.0.0" },
   {
     instructions:
       "Read-only access to a Jobber field-service business account: jobs, invoices, quotes, " +

@@ -125,7 +125,7 @@ export class JobberClient {
             accept: "application/json",
             authorization: `Bearer ${this.accessToken}`,
             "x-jobber-graphql-version": this.config.apiVersion,
-            "user-agent": "jobber-mcp/0.1.0",
+            "user-agent": "jobber-mcp/1.0.0",
           },
           body: JSON.stringify({ query, variables }),
         });

@@ -1,7 +1,7 @@
 {
   "name": "jobber-mcp",
-  "version": "0.1.0",
-  "description": "MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to Jobber field/home-services software via Jobber's GraphQL API",
+  "version": "1.0.0",
+  "description": "Read-only MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to Jobber — jobs, invoices, quotes, schedule and clients via Jobber's official GraphQL API.",
   "type": "module",
   "main": "dist/src/index.js",
   "bin": {
@@ -25,9 +25,28 @@
     "model-context-protocol",
     "jobber",
     "field-services",
-    "ai-assistant"
+    "field-service-management",
+    "ai-assistant",
+    "graphql",
+    "claude",
+    "chatgpt"
   ],
+  "author": "Ajay Sharma",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/jobber-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/jobber-mcp/issues"
+  },
+  "homepage": "https://github.com/your-username/jobber-mcp#readme",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "zod": "^3.25.0"

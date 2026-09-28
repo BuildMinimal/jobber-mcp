@@ -1,10 +1,13 @@
 # jobber-mcp
 
-MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobber** (field/home services business software), built on Jobber's open GraphQL API.
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Node](https://img.shields.io/badge/node-%E2%89%A518.17-green)
+![Jobber API](https://img.shields.io/badge/Jobber%20API-verified%202026--05--12-brightgreen)
+![Access](https://img.shields.io/badge/access-read--only-success)
 
-- API docs: https://developer.getjobber.com (open self-serve GraphQL API, free developer program)
+A read-only **MCP server** connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobber** — field/home-services business software — via Jobber's official GraphQL API. Ask your assistant things like *"which invoices are overdue?"* or *"what's on the schedule this week?"* and get answers from your real account.
 
-- Status: **read-only v1, verified against the live schema** (API version `2026-05-12`, Sept 2026)
+> **Not affiliated with Jobber.** This is an independent, community-built integration. "Jobber" is a trademark of Jobber Software Corp. Use of the name here is nominative — it describes what the tool connects to.
 
 ## Tools (read-only v1)
 
@@ -17,11 +20,40 @@ MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobb
 | `get_quotes` | Quote pipeline grouped by status |
 | `draft_client_message` | Compose a payment reminder / follow-up **draft** enriched with live invoice facts — never sends |
 
+## Why this one
+
+Several Jobber MCP servers exist; most are weekend prototypes that break in
+week two. This one is built for the failures that actually kill Jobber
+integrations:
+
+- **Silent token refresh** — access tokens expire; renewal just works when a
+  refresh token and app credentials are configured
+- **Throttle-aware retries** — Jobber's GraphQL API uses a query-cost budget
+  (10,000 points, +500/sec); bursts wait and retry instead of erroring
+- **API-version pinning + drift fallback** — sends the required
+  `X-JOBBER-GRAPHQL-VERSION` header, and if a schema change rejects our
+  filters, queries degrade gracefully instead of failing
+- **Verified against the live schema** (`2026-05-12`) — `EncodedId`
+  identifiers, enum statuses, `amounts` money shape, scalar sort inputs
+- **Correct details** — money in your account's own currency (₹/€/£/…, not a
+  hardcoded `$`), visit times in your local timezone
+- **Tests** — an offline end-to-end suite (mock Jobber API + in-memory MCP
+  client) and a live read-only smoke script
+- **Trust posture** — strictly read-only, least-privilege scopes, your tokens
+  never leave your machine, drafts never send
+
+## Requirements
+
+- Node.js 18.17+
+- A Jobber account (a free trial works fine)
+- A free developer app from https://developer.getjobber.com
+
 ## Setup
 
 1. **Create a Jobber developer app** at https://developer.getjobber.com (free). Note your `CLIENT ID` / `CLIENT SECRET`. Enable **read-only** scopes for Clients, Jobs, Quotes, Scheduled Items, and Invoices. Leave the Callback URL blank — Jobber allows `localhost` redirects automatically on any port.
 2. **Install & configure:**
    ```bash
+   git clone https://github.com/your-username/jobber-mcp.git
    cd jobber-mcp
    npm install
    cp .env.example .env      # fill in JOBBER_CLIENT_ID / JOBBER_CLIENT_SECRET
@@ -48,6 +80,9 @@ MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobb
 
 Then try: *"Which invoices are overdue? Draft a polite reminder for each."*
 
+Optional: set `JOBBER_TIMEZONE` (IANA name, e.g. `Asia/Kolkata`) so visit
+times display in your local timezone.
+
 ## Schema verification & maintenance
 
 The queries are **verified against the live schema** as of API version
@@ -60,11 +95,6 @@ Two things matter when something breaks after an API bump:
    `npm run introspect` (dumps root queries + type/input fields), align that
    file, then check with `npm run test:wiring` (offline) and `npm run smoke`
    (live, read-only).
-
-Safety net: if the live schema rejects our filter/search arguments after a
-version bump, the client automatically retries without them and tools filter
-results locally; selection-field mismatches surface the GraphQL error verbatim
-with a hint.
 
 ## Development
 
@@ -79,27 +109,22 @@ npm run introspect    # dump live schema surface (needs token)
 
 Layout: `src/index.ts` (entry) · `src/tools.ts` (tool definitions + local
 filtering/formatting) · `src/jobber/client.ts` (GraphQL fetch, version header,
-401 refresh, filter fallback) · `src/jobber/queries.ts` (all GraphQL documents,
-schema-verified) · `src/config.ts` (env/.env) · `scripts/` (auth, introspect,
-smoke, wiring test).
+401 refresh, throttle retry, filter fallback) · `src/jobber/queries.ts` (all
+GraphQL documents, schema-verified) · `src/config.ts` (env/.env) · `scripts/`
+(auth, introspect, smoke, wiring test).
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development guide,
+[COMPETITORS.md](COMPETITORS.md) for the landscape survey this project
+positions itself in, [CHANGELOG.md](CHANGELOG.md) for release history, and
+[SECURITY.md](SECURITY.md) for the trust model and how to report issues.
 
 ## Principles
 
-1. Read-only first; write tools (`create_quote`, `quote_to_invoice`, send) only after validation.
+1. Read-only first; write tools (`create_quote`, `quote_to_invoice`, send) only after validation, behind an explicit confirm-before-send design.
 2. Customer-held OAuth tokens — never store secrets server-side; tokens live in the customer's env/config.
-3. Opinionated workflow tools, not thin CRUD (that's what Composio undercuts at $0.0003/call).
-4. Open-source core; hosted version at $9–29/mo later.
-
-## Status
-
-- [x] Create Jobber developer account + sandbox (read-only scopes: Clients, Jobs, Quotes, Scheduled Items, Invoices)
-- [x] Prototype server (TypeScript, official MCP SDK, stdio transport)
-- [x] Offline wiring test — 11/11 cases pass against a mock Jobber API
-- [x] Verify field names against live schema via introspection (`2026-05-12`) + live smoke test
-- [ ] Add sample data to the trial account and exercise tools end-to-end in an AI client
-- [ ] List on Smithery / PulseMCP / Glama
-- [ ] Post in Jobber community + r/Jobber
+3. Opinionated workflow tools, not thin CRUD wrappers.
+4. Open-source core; a hosted version may come later.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
