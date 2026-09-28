@@ -13,6 +13,7 @@
     "dev": "tsx src/index.ts",
     "auth": "tsx scripts/auth.ts",
     "introspect": "tsx scripts/introspect.ts",
+    "smoke": "tsx scripts/smoke.ts",
     "test:wiring": "tsx scripts/wiring-test.ts"
   },
   "engines": {

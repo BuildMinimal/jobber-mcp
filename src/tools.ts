@@ -121,6 +121,7 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
         let nodes = data.jobs?.nodes ?? [];
         if (args.client_id) nodes = nodes.filter((n) => n.client?.id === args.client_id);
         // safety net for the unfiltered fallback path
+        if (args.status) nodes = nodes.filter((n) => statusOf(n.jobStatus) === args.status);
         if (after) nodes = nodes.filter((n) => n.createdAt != null && new Date(n.createdAt) >= after);
         if (before) {
           nodes = nodes.filter((n) => n.createdAt != null && new Date(n.createdAt) < addDays(before, 1));

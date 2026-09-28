@@ -4,7 +4,7 @@ MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobb
 
 - API docs: https://developer.getjobber.com (open self-serve GraphQL API, free developer program)
 - Research: see `../mcp-deep-dive.md`
-- Status: **prototype, read-only, offline-tested** — live-schema verification pending a sandbox account (see below)
+- Status: **read-only v1, verified against the live schema** (API version `2026-05-12`, Sept 2026)
 
 ## Tools (read-only v1)
 
@@ -48,41 +48,40 @@ MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobb
 
 Then try: *"Which invoices are overdue? Draft a polite reminder for each."*
 
-## Verifying against the live schema (first session with a token)
+## Schema verification & maintenance
 
-Jobber's GraphQL schema is not fully documented, and this prototype's field names
-follow best-known docs (Sept 2026) **without live verification yet**. Two safety
-nets are built in:
+The queries are **verified against the live schema** as of API version
+`2026-05-12` (the version Jobber's response `extensions.versioning` reports).
+Two things matter when something breaks after an API bump:
 
-1. Guessed search-input fields are auto-dropped on schema rejection — the client
-   retries unfiltered and tools filter results locally.
-2. Selection-field mismatches surface the GraphQL error verbatim with a hint.
+1. The API requires an `X-JOBBER-GRAPHQL-VERSION` header (default set via
+   `JOBBER_API_VERSION` in `.env` if Jobber ships a newer version).
+2. All GraphQL documents live in `src/jobber/queries.ts` — re-run
+   `npm run introspect` (dumps root queries + type/input fields), align that
+   file, then check with `npm run test:wiring` (offline) and `npm run smoke`
+   (live, read-only).
 
-First run with sandbox credentials:
-
-```bash
-npm run introspect                 # dumps root queries + Job/Invoice/Quote/Client/Visit fields
-npm run introspect SomeOtherType   # any additional type
-```
-
-Align `src/jobber/queries.ts` (the single place queries live) with what it
-prints, then re-run `npm run test:wiring` and exercise the tools. If the API
-404s, the GraphQL path may differ — set `JOBBER_API_URL` (see `.env.example`).
+Safety net: if the live schema rejects our filter/search arguments after a
+version bump, the client automatically retries without them and tools filter
+results locally; selection-field mismatches surface the GraphQL error verbatim
+with a hint.
 
 ## Development
 
 ```bash
 npm run build         # tsc, typechecks src + scripts
 npm run test:wiring   # offline end-to-end: mock Jobber API + in-memory MCP client, all 6 tools (no token needed)
+npm run smoke         # live read-only check that all queries still validate (needs token)
 npm run dev           # run server from source
 npm run auth          # local OAuth code-flow helper (localhost callback)
 npm run introspect    # dump live schema surface (needs token)
 ```
 
 Layout: `src/index.ts` (entry) · `src/tools.ts` (tool definitions + local
-filtering/formatting) · `src/jobber/client.ts` (GraphQL fetch, 401 refresh,
-input fallback) · `src/jobber/queries.ts` (all GraphQL documents) ·
-`src/config.ts` (env/.env) · `scripts/` (auth, introspect, wiring test).
+filtering/formatting) · `src/jobber/client.ts` (GraphQL fetch, version header,
+401 refresh, filter fallback) · `src/jobber/queries.ts` (all GraphQL documents,
+schema-verified) · `src/config.ts` (env/.env) · `scripts/` (auth, introspect,
+smoke, wiring test).
 
 ## Principles
 
@@ -93,10 +92,11 @@ input fallback) · `src/jobber/queries.ts` (all GraphQL documents) ·
 
 ## Status
 
-- [ ] Create Jobber developer account + sandbox (needs a human — portal requires signup)
+- [x] Create Jobber developer account + sandbox (read-only scopes: Clients, Jobs, Quotes, Scheduled Items, Invoices)
 - [x] Prototype server (TypeScript, official MCP SDK, stdio transport)
-- [x] Offline wiring test — 10/10 cases pass against a mock Jobber API
-- [ ] Verify field names against live sandbox via `npm run introspect`
+- [x] Offline wiring test — 11/11 cases pass against a mock Jobber API
+- [x] Verify field names against live schema via introspection (`2026-05-12`) + live smoke test
+- [ ] Add sample data to the trial account and exercise tools end-to-end in an AI client
 - [ ] List on Smithery / PulseMCP / Glama
 - [ ] Post in Jobber community + r/Jobber
 

@@ -140,9 +140,8 @@ const mock: Server = createServer((req, res) => {
     // honor the server-side visit range filter, like the real API
     const range = (body.variables?.filter as { startAt?: { after?: string; before?: string } } | undefined)?.startAt;
     if (opName === "Visits" && range) {
-      const cloned = JSON.parse(JSON.stringify(responses.Visits)) as typeof responses.Visits;
-      const conn = cloned.visits as { nodes: Array<{ startAt: string }> };
-      conn.nodes = conn.nodes.filter(
+      const cloned = JSON.parse(JSON.stringify(responses.Visits)) as { visits: { nodes: Array<{ startAt: string }> } };
+      cloned.visits.nodes = cloned.visits.nodes.filter(
         (v) => (!range.after || v.startAt >= range.after) && (!range.before || v.startAt < range.before),
       );
       data = cloned;
