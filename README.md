@@ -4,6 +4,7 @@
 ![Node](https://img.shields.io/badge/node-%E2%89%A518.17-green)
 ![Jobber API](https://img.shields.io/badge/Jobber%20API-verified%202026--05--12-brightgreen)
 ![Access](https://img.shields.io/badge/access-read--only-success)
+[![Quality and maintenance score on Glama](https://glama.ai/mcp/servers/BuildMinimal/jobber-mcp/badges/score.svg)](https://glama.ai/mcp/servers/BuildMinimal/jobber-mcp)
 
 A read-only **MCP server** connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobber** - field/home-services business software - via Jobber's official GraphQL API. Ask your assistant things like *"which invoices are overdue?"* or *"what's on the schedule this week?"* and get answers from your real account.
 
