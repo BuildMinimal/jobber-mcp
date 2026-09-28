@@ -49,28 +49,45 @@ export class JobberClient {
   }
 
   /**
-   * Execute a GraphQL operation.
+   * Execute a GraphQL operation with two self-healing retries:
    *
-   * If the live Jobber schema rejects our filter/search arguments (schema
-   * drift after an API version bump), automatically retry once without them —
-   * tools compensate by filtering locally.
+   * 1. Throttled by Jobber's query-cost budget (10k points, +500/sec):
+   *    wait for the budget to restore, then retry (up to twice).
+   * 2. Schema drift: if the live schema rejects our filter/search arguments,
+   *    retry once without them — tools compensate by filtering locally.
    */
   async graphql<T>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
     const hasSearchArgs = DROPPABLE_SEARCH_ARGS.some((k) => k in variables);
-    try {
-      return await this.execute<T>(query, variables);
-    } catch (err) {
-      if (
-        hasSearchArgs &&
-        err instanceof JobberApiError &&
-        err.errors.some((e) => VARIABLE_COERCION_ERROR.test(e.message))
-      ) {
-        const rest = Object.fromEntries(
-          Object.entries(variables).filter(([k]) => !DROPPABLE_SEARCH_ARGS.includes(k as never)),
-        );
-        return await this.execute<T>(query, rest);
+    let current = variables;
+    let fellBack = false;
+    for (let throttleRetries = 0; ; ) {
+      try {
+        return await this.execute<T>(query, current);
+      } catch (err) {
+        if (err instanceof JobberApiError) {
+          if (err.errors.some((e) => /throttl/i.test(e.message)) && throttleRetries < 2) {
+            throttleRetries++;
+            const waitMs = 1250 * throttleRetries;
+            console.error(
+              `[jobber-mcp] throttled by Jobber query-cost budget — waiting ${waitMs}ms before retry`,
+            );
+            await new Promise((resolve) => setTimeout(resolve, waitMs));
+            continue;
+          }
+          if (
+            hasSearchArgs &&
+            !fellBack &&
+            err.errors.some((e) => VARIABLE_COERCION_ERROR.test(e.message))
+          ) {
+            fellBack = true;
+            current = Object.fromEntries(
+              Object.entries(variables).filter(([k]) => !DROPPABLE_SEARCH_ARGS.includes(k as never)),
+            );
+            continue;
+          }
+        }
+        throw err;
       }
-      throw err;
     }
   }
 

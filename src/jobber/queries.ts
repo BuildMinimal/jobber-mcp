@@ -209,7 +209,7 @@ export const queries = {
             id
             name
           }
-          jobs {
+          jobs(first: 1) {
             nodes {
               id
               jobNumber
@@ -226,7 +226,7 @@ export const queries = {
   `,
 
   invoiceById: /* GraphQL */ `
-    query Invoice($id: ID!) {
+    query Invoice($id: EncodedId!) {
       invoice(id: $id) {
         id
         invoiceNumber
@@ -254,7 +254,7 @@ export const queries = {
   `,
 
   clientById: /* GraphQL */ `
-    query Client($id: ID!) {
+    query Client($id: EncodedId!) {
       client(id: $id) {
         id
         name
@@ -343,7 +343,7 @@ export const queries = {
             id
             name
           }
-          jobs {
+          jobs(first: 1) {
             nodes {
               id
               jobNumber

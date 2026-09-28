@@ -14,6 +14,7 @@
     "auth": "tsx scripts/auth.ts",
     "introspect": "tsx scripts/introspect.ts",
     "smoke": "tsx scripts/smoke.ts",
+    "sync:zcode": "node scripts/sync-zcode.mjs",
     "test:wiring": "tsx scripts/wiring-test.ts"
   },
   "engines": {

@@ -40,7 +40,7 @@ const checks: Array<{ name: string; run: () => Promise<string> }> = [
     run: async () => {
       const d = await jobber.graphql<{ invoices: { totalCount: number | null; nodes: unknown[] } }>(queries.invoices, {
         first: 5,
-        sort: [{ key: ["DUE_DATE"], direction: ["DESCENDING"] }],
+        sort: [{ key: "DUE_DATE", direction: "DESCENDING" }],
       });
       return `${d.invoices?.nodes.length ?? 0} nodes, totalCount=${d.invoices?.totalCount ?? "?"}`;
     },
@@ -55,7 +55,7 @@ const checks: Array<{ name: string; run: () => Promise<string> }> = [
       const d = await jobber.graphql<{ visits: { nodes: unknown[] } }>(queries.visits, {
         first: 5,
         filter: { startAt: { after: iso(from), before: iso(to) } },
-        sort: [{ key: ["START_AT"], direction: ["ASCENDING"] }],
+        sort: [{ key: "START_AT", direction: "ASCENDING" }],
       });
       return `${d.visits?.nodes.length ?? 0} visits in range`;
     },

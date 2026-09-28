@@ -159,16 +159,16 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
       description:
         "List invoices with a balance owing (status past_due / awaiting_payment), sorted oldest-due first, " +
         "with days overdue and the total outstanding. Use for accounts-receivable questions like " +
-        '"which invoices are overdue?". Scans the most recent invoices (default 100) and filters on balance.',
+        '"which invoices are overdue?". Scans the most recent invoices (default 50) and filters on balance.',
       inputSchema: {
-        limit: z.number().int().min(1).max(100).optional().describe("How many recent invoices to scan (default 100)"),
+        limit: z.number().int().min(1).max(100).optional().describe("How many recent invoices to scan (default 50)"),
       },
     },
     async (args) => {
       try {
         const data = await jobber.graphql<InvoicesData>(queries.invoices, {
-          first: args.limit ?? 100,
-          sort: [{ key: ["DUE_DATE"], direction: ["DESCENDING"] }],
+          first: args.limit ?? 50,
+          sort: [{ key: "DUE_DATE", direction: "DESCENDING" }],
         });
         const all = data.invoices?.nodes ?? [];
         const owing = all
@@ -266,7 +266,7 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
       inputSchema: {
         from: z.string().optional().describe("Range start, YYYY-MM-DD (default today)"),
         to: z.string().optional().describe("Range end inclusive, YYYY-MM-DD (default from + 7 days)"),
-        limit: z.number().int().min(1).max(100).optional().describe("Page size (default 100)"),
+        limit: z.number().int().min(1).max(100).optional().describe("Page size (default 50)"),
         cursor: z.string().optional().describe("Pagination cursor from a previous get_schedule result"),
       },
     },
@@ -277,12 +277,12 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
         if (to < from) return fail("`to` must be on or after `from`.");
 
         const data = await jobber.graphql<VisitsData>(queries.visits, {
-          first: args.limit ?? 100,
+          first: args.limit ?? 50,
           after: args.cursor,
           filter: {
             startAt: { after: isoDayStart(from), before: isoDayStart(addDays(to, 1)) },
           },
-          sort: [{ key: ["START_AT"], direction: ["ASCENDING"] }],
+          sort: [{ key: "START_AT", direction: "ASCENDING" }],
         });
 
         const rangeEnd = addDays(to, 1);
