@@ -46,4 +46,3 @@ via the official GraphQL API.
 - Tooling: offline wiring test suite (mock Jobber API + in-memory MCP client,
   11 cases incl. non-USD currency), live read-only smoke test, and a schema
   introspection script for API-version bumps
-- `npm run sync:zcode` helper to refresh credentials in a ZCode MCP config

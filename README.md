@@ -64,7 +64,7 @@ No Node.js, no terminal, no config files. Tokens are stored locally at `~/.jobbe
 
 ### Any other MCP client (developers)
 
-Works with anything that speaks MCP over stdio (Cursor, VS Code Copilot, ZCode, Claude Code, …).
+Works with anything that speaks MCP over stdio (Cursor, VS Code Copilot, Claude Code, …).
 
 1. **Create a Jobber developer app** at https://developer.getjobber.com (free). Note your `CLIENT ID` / `CLIENT SECRET`. Enable **read-only** scopes for Clients, Jobs, Quotes, Scheduled Items, and Invoices. Leave the Callback URL blank - Jobber allows `localhost` redirects automatically on any port.
 2. **Install & configure** (or skip this entirely and just call the `authenticate` tool from your assistant):
