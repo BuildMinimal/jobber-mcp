@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.buildminimal/jobber-mcp",
+  "title": "Jobber MCP",
+  "description": "Read-only MCP server connecting AI assistants to Jobber: invoices, schedule, quotes, clients.",
+  "version": "1.1.0",
+  "homepage": "https://github.com/BuildMinimal/jobber-mcp",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "BuildMinimal"
+    }
+  ],
+  "repository": {
+    "source": "github",
+    "url": "https://github.com/BuildMinimal/jobber-mcp.git"
+  },
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/BuildMinimal/jobber-mcp/releases/download/v1.1.0/jobber-mcp.mcpb",
+      "fileSha256": "bc47d75d4b63a2736c6df51a7fdd3ec75833edd992cac0484e8dab1c3038b4a3",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
