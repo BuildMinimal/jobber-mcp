@@ -1,7 +1,7 @@
 {
   "name": "jobber-mcp",
   "version": "1.0.0",
-  "description": "Read-only MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to Jobber — jobs, invoices, quotes, schedule and clients via Jobber's official GraphQL API.",
+  "description": "Read-only MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to Jobber - jobs, invoices, quotes, schedule and clients via Jobber's official GraphQL API.",
   "type": "module",
   "main": "dist/src/index.js",
   "bin": {
@@ -35,12 +35,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/jobber-mcp.git"
+    "url": "git+https://github.com/buildminimal/jobber-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/jobber-mcp/issues"
+    "url": "https://github.com/buildminimal/jobber-mcp/issues"
   },
-  "homepage": "https://github.com/your-username/jobber-mcp#readme",
+  "homepage": "https://github.com/buildminimal/jobber-mcp#readme",
   "files": [
     "dist",
     "README.md",

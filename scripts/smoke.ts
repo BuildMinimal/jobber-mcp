@@ -1,7 +1,7 @@
 /**
  * Live read-only smoke test: runs every v1 query against the real Jobber API
  * using credentials from .env. Verifies the GraphQL documents validate
- * against the live schema. Empty results are fine — GraphQL validation
+ * against the live schema. Empty results are fine - GraphQL validation
  * errors are not.
  *
  *   npm run smoke
@@ -93,5 +93,5 @@ for (const check of checks) {
     console.log(`FAIL  ${check.name}: ${(err as Error).message}`);
   }
 }
-console.log(failures === 0 ? "\nAll live smoke checks passed — queries match the live schema." : `\n${failures} failure(s).`);
+console.log(failures === 0 ? "\nAll live smoke checks passed - queries match the live schema." : `\n${failures} failure(s).`);
 process.exit(failures === 0 ? 0 : 1);

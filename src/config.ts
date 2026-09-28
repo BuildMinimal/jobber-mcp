@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-/** Minimal .env loader — zero dependencies, never overrides real env vars. */
+/** Minimal .env loader - zero dependencies, never overrides real env vars. */
 function loadDotEnv(): void {
   const path = join(process.cwd(), ".env");
   if (!existsSync(path)) return;

@@ -5,9 +5,9 @@
 ![Jobber API](https://img.shields.io/badge/Jobber%20API-verified%202026--05--12-brightgreen)
 ![Access](https://img.shields.io/badge/access-read--only-success)
 
-A read-only **MCP server** connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobber** — field/home-services business software — via Jobber's official GraphQL API. Ask your assistant things like *"which invoices are overdue?"* or *"what's on the schedule this week?"* and get answers from your real account.
+A read-only **MCP server** connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobber** - field/home-services business software - via Jobber's official GraphQL API. Ask your assistant things like *"which invoices are overdue?"* or *"what's on the schedule this week?"* and get answers from your real account.
 
-> **Not affiliated with Jobber.** This is an independent, community-built integration. "Jobber" is a trademark of Jobber Software Corp. Use of the name here is nominative — it describes what the tool connects to.
+> **Not affiliated with Jobber.** This is an independent, community-built integration. "Jobber" is a trademark of Jobber Software Corp. Use of the name here is nominative - it describes what the tool connects to.
 
 ## Tools (read-only v1)
 
@@ -18,7 +18,7 @@ A read-only **MCP server** connecting AI assistants (Claude, ChatGPT, Gemini, Co
 | `get_client_details` | Client profile + outstanding balance + recent jobs and invoices |
 | `get_schedule` | Upcoming visits in a date range (default today → +7 days) |
 | `get_quotes` | Quote pipeline grouped by status |
-| `draft_client_message` | Compose a payment reminder / follow-up **draft** enriched with live invoice facts — never sends |
+| `draft_client_message` | Compose a payment reminder / follow-up **draft** enriched with live invoice facts - never sends |
 
 ## Why this one
 
@@ -26,20 +26,20 @@ Several Jobber MCP servers exist; most are weekend prototypes that break in
 week two. This one is built for the failures that actually kill Jobber
 integrations:
 
-- **Silent token refresh** — access tokens expire; renewal just works when a
+- **Silent token refresh** - access tokens expire; renewal just works when a
   refresh token and app credentials are configured
-- **Throttle-aware retries** — Jobber's GraphQL API uses a query-cost budget
+- **Throttle-aware retries** - Jobber's GraphQL API uses a query-cost budget
   (10,000 points, +500/sec); bursts wait and retry instead of erroring
-- **API-version pinning + drift fallback** — sends the required
+- **API-version pinning + drift fallback** - sends the required
   `X-JOBBER-GRAPHQL-VERSION` header, and if a schema change rejects our
   filters, queries degrade gracefully instead of failing
-- **Verified against the live schema** (`2026-05-12`) — `EncodedId`
+- **Verified against the live schema** (`2026-05-12`) - `EncodedId`
   identifiers, enum statuses, `amounts` money shape, scalar sort inputs
-- **Correct details** — money in your account's own currency (₹/€/£/…, not a
+- **Correct details** - money in your account's own currency (₹/€/£/…, not a
   hardcoded `$`), visit times in your local timezone
-- **Tests** — an offline end-to-end suite (mock Jobber API + in-memory MCP
+- **Tests** - an offline end-to-end suite (mock Jobber API + in-memory MCP
   client) and a live read-only smoke script
-- **Trust posture** — strictly read-only, least-privilege scopes, your tokens
+- **Trust posture** - strictly read-only, least-privilege scopes, your tokens
   never leave your machine, drafts never send
 
 ## Requirements
@@ -50,10 +50,10 @@ integrations:
 
 ## Setup
 
-1. **Create a Jobber developer app** at https://developer.getjobber.com (free). Note your `CLIENT ID` / `CLIENT SECRET`. Enable **read-only** scopes for Clients, Jobs, Quotes, Scheduled Items, and Invoices. Leave the Callback URL blank — Jobber allows `localhost` redirects automatically on any port.
+1. **Create a Jobber developer app** at https://developer.getjobber.com (free). Note your `CLIENT ID` / `CLIENT SECRET`. Enable **read-only** scopes for Clients, Jobs, Quotes, Scheduled Items, and Invoices. Leave the Callback URL blank - Jobber allows `localhost` redirects automatically on any port.
 2. **Install & configure:**
    ```bash
-   git clone https://github.com/your-username/jobber-mcp.git
+   git clone https://github.com/buildminimal/jobber-mcp.git
    cd jobber-mcp
    npm install
    cp .env.example .env      # fill in JOBBER_CLIENT_ID / JOBBER_CLIENT_SECRET
@@ -91,7 +91,7 @@ Two things matter when something breaks after an API bump:
 
 1. The API requires an `X-JOBBER-GRAPHQL-VERSION` header (default set via
    `JOBBER_API_VERSION` in `.env` if Jobber ships a newer version).
-2. All GraphQL documents live in `src/jobber/queries.ts` — re-run
+2. All GraphQL documents live in `src/jobber/queries.ts` - re-run
    `npm run introspect` (dumps root queries + type/input fields), align that
    file, then check with `npm run test:wiring` (offline) and `npm run smoke`
    (live, read-only).
@@ -121,10 +121,10 @@ positions itself in, [CHANGELOG.md](CHANGELOG.md) for release history, and
 ## Principles
 
 1. Read-only first; write tools (`create_quote`, `quote_to_invoice`, send) only after validation, behind an explicit confirm-before-send design.
-2. Customer-held OAuth tokens — never store secrets server-side; tokens live in the customer's env/config.
+2. Customer-held OAuth tokens - never store secrets server-side; tokens live in the customer's env/config.
 3. Opinionated workflow tools, not thin CRUD wrappers.
 4. Open-source core; a hosted version may come later.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).

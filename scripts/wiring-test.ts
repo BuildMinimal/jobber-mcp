@@ -89,8 +89,8 @@ const responses: Record<string, unknown> = {
     visits: {
       totalCount: 3,
       nodes: [
-        { id: "v1", title: "Faucet repair — on site", startAt: `${isoDay(1)}T14:00:00Z`, endAt: `${isoDay(1)}T15:30:00Z`, allDay: false, visitStatus: "UPCOMING", isComplete: false, instructions: null, job: { id: "j1", jobNumber: 101, title: "Kitchen faucet repair", client: { id: "c1", name: "Dana Smith" } } },
-        { id: "v2", title: "Fence install — day 1", startAt: `${isoDay(3)}T09:00:00Z`, endAt: `${isoDay(3)}T17:00:00Z`, allDay: false, visitStatus: "UPCOMING", isComplete: false, instructions: null, job: { id: "j2", jobNumber: 102, title: "Backyard fence install", client: { id: "c2", name: "Riverside Cafe" } } },
+        { id: "v1", title: "Faucet repair - on site", startAt: `${isoDay(1)}T14:00:00Z`, endAt: `${isoDay(1)}T15:30:00Z`, allDay: false, visitStatus: "UPCOMING", isComplete: false, instructions: null, job: { id: "j1", jobNumber: 101, title: "Kitchen faucet repair", client: { id: "c1", name: "Dana Smith" } } },
+        { id: "v2", title: "Fence install - day 1", startAt: `${isoDay(3)}T09:00:00Z`, endAt: `${isoDay(3)}T17:00:00Z`, allDay: false, visitStatus: "UPCOMING", isComplete: false, instructions: null, job: { id: "j2", jobNumber: 102, title: "Backyard fence install", client: { id: "c2", name: "Riverside Cafe" } } },
         { id: "v3", title: "Old visit (filtered by server-side range)", startAt: `${isoDay(-20)}T09:00:00Z`, endAt: `${isoDay(-20)}T10:00:00Z`, allDay: false, visitStatus: "COMPLETED", isComplete: true, instructions: null, job: { id: "j3", jobNumber: 103, title: "Gutter cleaning", client: { id: "c1", name: "Dana Smith" } } },
       ],
       pageInfo: { hasNextPage: false, endCursor: null },

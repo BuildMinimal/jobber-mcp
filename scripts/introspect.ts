@@ -89,7 +89,7 @@ try {
     const data = await jobber.graphql<{ __type: TypeDetail | null }>(TYPE_QUERY, { name });
     const t = data.__type;
     if (!t) {
-      console.log(`\n== ${name} == (not found — check the exact type name in root fields above)`);
+      console.log(`\n== ${name} == (not found - check the exact type name in root fields above)`);
       continue;
     }
     const signature = (f: TypeField) => `${f.name}: ${typeName(f.type)}`;

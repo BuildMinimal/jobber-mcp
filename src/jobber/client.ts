@@ -49,7 +49,7 @@ export class JobberClient {
     this.accessToken = stripBearer(config.accessToken);
   }
 
-  /** Account country (fetched once, cached) — drives currency selection. */
+  /** Account country (fetched once, cached) - drives currency selection. */
   async accountCountryCode(): Promise<string | null> {
     if (this.countryCode !== undefined) return this.countryCode;
     try {
@@ -59,7 +59,7 @@ export class JobberClient {
       );
       this.countryCode = data?.account?.countryCode ?? null;
     } catch {
-      // non-fatal — tools fall back to a plain number format
+      // non-fatal - tools fall back to a plain number format
       this.countryCode = null;
     }
     return this.countryCode;
@@ -71,7 +71,7 @@ export class JobberClient {
    * 1. Throttled by Jobber's query-cost budget (10k points, +500/sec):
    *    wait for the budget to restore, then retry (up to twice).
    * 2. Schema drift: if the live schema rejects our filter/search arguments,
-   *    retry once without them — tools compensate by filtering locally.
+   *    retry once without them - tools compensate by filtering locally.
    */
   async graphql<T>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
     const hasSearchArgs = DROPPABLE_SEARCH_ARGS.some((k) => k in variables);
@@ -86,7 +86,7 @@ export class JobberClient {
             throttleRetries++;
             const waitMs = 1250 * throttleRetries;
             console.error(
-              `[jobber-mcp] throttled by Jobber query-cost budget — waiting ${waitMs}ms before retry`,
+              `[jobber-mcp] throttled by Jobber query-cost budget - waiting ${waitMs}ms before retry`,
             );
             await new Promise((resolve) => setTimeout(resolve, waitMs));
             continue;
@@ -141,7 +141,7 @@ export class JobberClient {
       if (!response.ok) {
         if (response.status === 404) {
           throw new JobberApiError(
-            `Jobber API returned 404 for ${this.config.graphqlUrl}. The GraphQL path may differ — ` +
+            `Jobber API returned 404 for ${this.config.graphqlUrl}. The GraphQL path may differ - ` +
               `try setting JOBBER_API_URL=https://api.getjobber.com/graphql in .env.`,
             [],
             response.status,

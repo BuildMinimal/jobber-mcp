@@ -3,13 +3,13 @@
  *
  * 1. Create a developer account + app at https://developer.getjobber.com
  * 2. Enable read-only scopes (Clients, Jobs, Quotes, Scheduled Items,
- *    Invoices). Leave the Callback URL blank — Jobber allows localhost
+ *    Invoices). Leave the Callback URL blank - Jobber allows localhost
  *    redirects automatically on any port (RFC 8252 loopback).
  * 3. Put JOBBER_CLIENT_ID / JOBBER_CLIENT_SECRET in .env
  * 4. Run: npm run auth
  *
  * Prints an access (and refresh) token to paste into .env or your MCP
- * client config. Tokens stay on this machine — nothing is uploaded.
+ * client config. Tokens stay on this machine - nothing is uploaded.
  */
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
@@ -41,12 +41,12 @@ if (scopes) authUrl.searchParams.set("scope", scopes);
 console.log(
   `Opening browser for Jobber authorization…\n\n  ${authUrl.toString()}\n\n` +
     `If the browser does not open, visit the URL above.\n` +
-    `Localhost callbacks are allowed automatically by Jobber — no registration needed (using ${redirectUri}).\n`,
+    `Localhost callbacks are allowed automatically by Jobber - no registration needed (using ${redirectUri}).\n`,
 );
 openBrowser(authUrl.toString());
 
 const code = await waitForCode(port, state);
-console.log("Authorization code received — exchanging for tokens…");
+console.log("Authorization code received - exchanging for tokens…");
 
 const tokenRes = await fetch(cfg.tokenUrl, {
   method: "POST",
@@ -107,7 +107,7 @@ function waitForCode(port: number, expectedState: string): Promise<string> {
         return;
       }
       if (returnedState !== expectedState) {
-        res.writeHead(400).end("State mismatch — possible CSRF, retry the script");
+        res.writeHead(400).end("State mismatch - possible CSRF, retry the script");
         srv.close();
         reject(new Error("OAuth state mismatch"));
         return;

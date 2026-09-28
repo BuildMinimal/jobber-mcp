@@ -23,7 +23,7 @@ const server = new McpServer(
       "Read-only access to a Jobber field-service business account: jobs, invoices, quotes, " +
       "scheduled visits, and clients. Prefer the specific tool for the question " +
       "(get_unpaid_invoices for AR, get_schedule for 'what's coming up', get_quotes for the pipeline). " +
-      "Dates are YYYY-MM-DD. draft_client_message composes drafts only — nothing is sent to clients " +
+      "Dates are YYYY-MM-DD. draft_client_message composes drafts only - nothing is sent to clients " +
       "without explicit human action.",
   },
 );

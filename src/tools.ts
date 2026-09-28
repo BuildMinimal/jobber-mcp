@@ -22,7 +22,7 @@ const fail = (text: string): ToolResult => ({ content: [{ type: "text", text }],
 function errorMessage(err: unknown): string {
   if (err instanceof JobberApiError) {
     const schemaHint = /field|type|argument|variable|schema|selection/i.test(err.message)
-      ? "\n\nHint: the live Jobber schema may differ from this build. Run `npm run introspect` with a valid token and align src/jobber/queries.ts — it is the single place queries live."
+      ? "\n\nHint: the live Jobber schema may differ from this build. Run `npm run introspect` with a valid token and align src/jobber/queries.ts - it is the single place queries live."
       : "";
     return `Jobber API error: ${err.message}${schemaHint}`;
   }
@@ -57,7 +57,7 @@ function todayUtc(): Date {
 }
 
 /**
- * Currency follows the Jobber account (derived from account.countryCode —
+ * Currency follows the Jobber account (derived from account.countryCode -
  * the API exposes no direct currency field). The formatter is initialized
  * lazily on the first money-formatting tool call; on failure it falls back
  * to a plain number so tools still work.
@@ -190,13 +190,13 @@ export function registerTools(
 
         const rows = nodes.map(
           (n) =>
-            `#${n.jobNumber ?? n.id} — ${n.title ?? "untitled"} — ${statusOf(n.jobStatus)} — ` +
-            `${n.client?.name ?? "no client"} — created ${shortDate(n.createdAt)}`,
+            `#${n.jobNumber ?? n.id} - ${n.title ?? "untitled"} - ${statusOf(n.jobStatus)} - ` +
+            `${n.client?.name ?? "no client"} - created ${shortDate(n.createdAt)}`,
         );
         let text = `Jobs (${nodes.length}${total ? ` of ${total}` : ""}):\n${rows.join("\n")}`;
         const pageInfo = data.jobs?.pageInfo;
         if (pageInfo?.hasNextPage && pageInfo.endCursor) {
-          text += `\n\nMore results available — pass cursor: ${pageInfo.endCursor}`;
+          text += `\n\nMore results available - pass cursor: ${pageInfo.endCursor}`;
         }
         return ok(text);
       } catch (err) {
@@ -241,9 +241,9 @@ export function registerTools(
           const daysLate = dueDate && dueDate < today ? daysBetween(dueDate, today) : 0;
           const flag = dueDate && dueDate < today ? `OVERDUE ${daysLate}d` : "CURRENT";
           return (
-            `${flag} [${statusOf(n.invoiceStatus)}] — INV ${n.invoiceNumber ?? n.id} — ` +
-            `${n.client?.name ?? "no client"} — owing ${fmtMoney(n.amounts?.invoiceBalance)} of ` +
-            `${fmtMoney(n.amounts?.total)} — due ${shortDate(n.dueDate)}`
+            `${flag} [${statusOf(n.invoiceStatus)}] - INV ${n.invoiceNumber ?? n.id} - ` +
+            `${n.client?.name ?? "no client"} - owing ${fmtMoney(n.amounts?.invoiceBalance)} of ` +
+            `${fmtMoney(n.amounts?.total)} - due ${shortDate(n.dueDate)}`
           );
         });
         return ok(
@@ -282,7 +282,7 @@ export function registerTools(
             : c.name ?? ([c.firstName, c.lastName].filter(Boolean).join(" ") || "unknown");
 
         const lines: string[] = [
-          `Client ${c.id}: ${name}${c.isLead ? " (lead)" : ""} — since ${shortDate(c.createdAt)}`,
+          `Client ${c.id}: ${name}${c.isLead ? " (lead)" : ""} - since ${shortDate(c.createdAt)}`,
           `Outstanding balance: ${fmtMoney(c.balance)}`,
           `Contact: ${c.email ?? "no email"} | ${c.phone ?? "no phone"}`,
         ];
@@ -291,7 +291,7 @@ export function registerTools(
         if (jobs.length > 0) {
           lines.push(`\nRecent jobs (${jobs.length}):`);
           for (const j of jobs) {
-            lines.push(`  #${j.jobNumber ?? j.id} — ${j.title ?? "untitled"} — ${statusOf(j.jobStatus)} — ${shortDate(j.createdAt)}`);
+            lines.push(`  #${j.jobNumber ?? j.id} - ${j.title ?? "untitled"} - ${statusOf(j.jobStatus)} - ${shortDate(j.createdAt)}`);
           }
         }
         const invoices = c.invoices?.nodes ?? [];
@@ -299,7 +299,7 @@ export function registerTools(
           lines.push(`\nRecent invoices (${invoices.length}):`);
           for (const i of invoices) {
             lines.push(
-              `  INV ${i.invoiceNumber ?? i.id} [${statusOf(i.invoiceStatus)}] — due ${shortDate(i.dueDate)} — ` +
+              `  INV ${i.invoiceNumber ?? i.id} [${statusOf(i.invoiceStatus)}] - due ${shortDate(i.dueDate)} - ` +
                 `owing ${fmtMoney(i.amounts?.invoiceBalance)} of ${fmtMoney(i.amounts?.total)}`,
             );
           }
@@ -357,14 +357,14 @@ export function registerTools(
 
         const rows = nodes.map(
           (v) =>
-            `${v.allDay ? dayInTz(v.startAt!, timezone) : stampInTz(v.startAt!, timezone)} — ${v.title ?? "visit"} — ` +
-            `${statusOf(v.visitStatus)}${v.isComplete ? " (complete)" : ""} — ` +
+            `${v.allDay ? dayInTz(v.startAt!, timezone) : stampInTz(v.startAt!, timezone)} - ${v.title ?? "visit"} - ` +
+            `${statusOf(v.visitStatus)}${v.isComplete ? " (complete)" : ""} - ` +
             `job #${v.job?.jobNumber ?? "?"} ${v.job?.title ?? ""} (${v.job?.client?.name ?? "no client"})`,
         );
         let text = `Schedule ${day(from)} → ${day(to)} (${nodes.length} visit(s)${total ? ` of ${total}` : ""}):\n${rows.join("\n")}`;
         const pageInfo = data.visits?.pageInfo;
         if (pageInfo?.hasNextPage && pageInfo.endCursor) {
-          text += `\n\nMore results available — pass cursor: ${pageInfo.endCursor}`;
+          text += `\n\nMore results available - pass cursor: ${pageInfo.endCursor}`;
         }
         return ok(text);
       } catch (err) {
@@ -419,16 +419,16 @@ export function registerTools(
         const sections = [...byStatus.entries()].map(([status, bucket]) => {
           const rows = bucket.map(
             (n) =>
-              `  Q#${n.quoteNumber ?? n.id} — ${n.title ?? "untitled"} — ${n.client?.name ?? "no client"} — ` +
-              `${fmtMoney(n.amounts?.total)} — ${n.sentAt ? `sent ${shortDate(n.sentAt)}` : `created ${shortDate(n.createdAt)}`} — ` +
-              `job #${n.jobs?.nodes[0]?.jobNumber ?? "—"}`,
+              `  Q#${n.quoteNumber ?? n.id} - ${n.title ?? "untitled"} - ${n.client?.name ?? "no client"} - ` +
+              `${fmtMoney(n.amounts?.total)} - ${n.sentAt ? `sent ${shortDate(n.sentAt)}` : `created ${shortDate(n.createdAt)}`} - ` +
+              `job #${n.jobs?.nodes[0]?.jobNumber ?? "-"}`,
           );
           return `${status} (${bucket.length}):\n${rows.join("\n")}`;
         });
         let text = `Quotes (${nodes.length}${data.quotes?.totalCount ? ` of ${data.quotes.totalCount}` : ""}):\n${sections.join("\n\n")}`;
         const pageInfo = data.quotes?.pageInfo;
         if (pageInfo?.hasNextPage && pageInfo.endCursor) {
-          text += `\n\nMore results available — pass cursor: ${pageInfo.endCursor}`;
+          text += `\n\nMore results available - pass cursor: ${pageInfo.endCursor}`;
         }
         return ok(text);
       } catch (err) {
@@ -445,13 +445,13 @@ export function registerTools(
       description:
         "Compose a DRAFT message (email or SMS) to a client, enriched with facts pulled live from Jobber " +
         "(invoice number, balance owing, due date, days overdue, client name). Nothing is ever sent or written " +
-        "to Jobber — the draft is returned for human review. Provide `message` if you already wrote the body " +
+        "to Jobber - the draft is returned for human review. Provide `message` if you already wrote the body " +
         "(the tool attaches verified facts); omit it to get a template based on `purpose`.",
       inputSchema: {
         purpose: z.enum(["payment_reminder", "appointment_reminder", "follow_up", "custom"]).describe("Why this message exists"),
         channel: z.enum(["email", "sms"]).optional().describe("Draft format (default email)"),
-        client_id: z.string().optional().describe("Jobber client ID — resolves the client's name"),
-        invoice_id: z.string().optional().describe("Jobber invoice ID — pulls amount/due-date facts (payment reminders)"),
+        client_id: z.string().optional().describe("Jobber client ID - resolves the client's name"),
+        invoice_id: z.string().optional().describe("Jobber invoice ID - pulls amount/due-date facts (payment reminders)"),
         tone: z.string().optional().describe('Desired tone, e.g. "polite but firm" (default "friendly, professional")'),
         key_points: z.array(z.string()).optional().describe("Points the message must cover (used by templates)"),
         message: z.string().optional().describe("Pre-written body from the assistant; used verbatim if provided"),
@@ -476,7 +476,7 @@ export function registerTools(
             if (clientName) facts.push(`client name: ${clientName}`);
             else warnings.push(`no client found for id ${args.client_id}`);
           } catch (err) {
-            warnings.push(`could not fetch client (${(err as Error).message}) — verify name manually`);
+            warnings.push(`could not fetch client (${(err as Error).message}) - verify name manually`);
           }
         }
 
@@ -505,7 +505,7 @@ export function registerTools(
               warnings.push(`no invoice found for id ${args.invoice_id}`);
             }
           } catch (err) {
-            warnings.push(`could not fetch invoice (${(err as Error).message}) — verify amounts manually`);
+            warnings.push(`could not fetch invoice (${(err as Error).message}) - verify amounts manually`);
           }
         }
 
@@ -517,7 +517,7 @@ export function registerTools(
           body = args.message;
           subject =
             args.purpose === "payment_reminder"
-              ? `Invoice ${invoiceNumber ?? ""} — payment reminder`
+              ? `Invoice ${invoiceNumber ?? ""} - payment reminder`
               : args.purpose === "appointment_reminder"
                 ? "Your upcoming appointment"
                 : args.purpose === "follow_up"
@@ -528,7 +528,7 @@ export function registerTools(
             .map((p) => `  • ${p}`)
             .join("\n");
           if (args.purpose === "payment_reminder") {
-            subject = `Invoice ${invoiceNumber ?? ""} — payment reminder`;
+            subject = `Invoice ${invoiceNumber ?? ""} - payment reminder`;
             body =
               `${salutation}\n\n` +
               `This is a friendly reminder that invoice ${invoiceNumber ? `INV ${invoiceNumber}` : "(see your records)"} ` +
@@ -556,17 +556,17 @@ export function registerTools(
           body = body.replace(/\n{2,}/g, "\n").replace(/\s+\n/g, "\n");
         }
 
-        const to = clientName ?? "(no client_id given — fill in the recipient)";
+        const to = clientName ?? "(no client_id given - fill in the recipient)";
         const factBlock =
           facts.length > 0
             ? facts.map((f) => `  - ${f}`).join("\n")
-            : "  (no Jobber facts attached — provide client_id / invoice_id to enrich)";
+            : "  (no Jobber facts attached - provide client_id / invoice_id to enrich)";
         const warnBlock = warnings.length > 0 ? `\nWarnings:\n${warnings.map((w) => `  - ${w}`).join("\n")}` : "";
 
         return ok(
-          `DRAFT ${channel.toUpperCase()} — NOT SENT\nTo: ${to}\nSubject: ${subject}\n\n${body}\n\n` +
+          `DRAFT ${channel.toUpperCase()} - NOT SENT\nTo: ${to}\nSubject: ${subject}\n\n${body}\n\n` +
             `---\nFacts pulled from Jobber (verify before sending):\n${factBlock}${warnBlock}\n` +
-            `NOTE: This is a draft only — nothing was sent or written to Jobber. Review and send via Jobber, ` +
+            `NOTE: This is a draft only - nothing was sent or written to Jobber. Review and send via Jobber, ` +
             `or ask about a send tool once write access is validated.`,
         );
       } catch (err) {

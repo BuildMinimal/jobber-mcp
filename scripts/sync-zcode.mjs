@@ -21,7 +21,7 @@ const KEYS = [
 
 const envPath = join(process.cwd(), ".env");
 if (!existsSync(envPath)) {
-  console.error("No .env found — run `npm run auth` first.");
+  console.error("No .env found - run `npm run auth` first.");
   process.exit(1);
 }
 const env = {};
@@ -30,7 +30,7 @@ for (const line of readFileSync(envPath, "utf8").split(/\r?\n/)) {
   if (m && KEYS.includes(m[1]) && m[2].trim()) env[m[1]] = m[2].trim();
 }
 if (!env.JOBBER_ACCESS_TOKEN && !env.JOBBER_REFRESH_TOKEN) {
-  console.error("No token found in .env — run `npm run auth` first.");
+  console.error("No token found in .env - run `npm run auth` first.");
   process.exit(1);
 }
 

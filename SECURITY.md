@@ -4,7 +4,7 @@
 
 - **Your credentials stay on your machine.** Tokens are read from environment
   variables or a local, gitignored `.env`. This project has no telemetry, no
-  analytics, and no backend — the server talks only to Jobber's API and your
+  analytics, and no backend - the server talks only to Jobber's API and your
   MCP client.
 - **Least privilege by design.** The documented setup requests only read
   scopes (Clients, Jobs, Quotes, Scheduled Items, Invoices). Write scopes are

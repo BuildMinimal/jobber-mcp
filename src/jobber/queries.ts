@@ -13,7 +13,7 @@
  *   `jobs: JobConnection` (plural)
  *
  * If the API version is bumped (see extensions.versioning in responses), re-run
- * `npm run introspect` and align here — this is the single place queries live.
+ * `npm run introspect` and align here - this is the single place queries live.
  */
 
 export interface PageInfo {

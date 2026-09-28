@@ -51,14 +51,14 @@ header and README → Schema verification). If Jobber ships a new API version:
 
 Tools are registered in `src/tools.ts`. Follow the existing pattern:
 
-- A specific, opinionated tool beats thin CRUD — think "what question is the
+- A specific, opinionated tool beats thin CRUD - think "what question is the
   business owner asking?" and return a formatted answer, not raw JSON.
 - Rich `description` text: agents choose tools by description. Include valid
   enum values, defaults, and when *not* to use the tool.
 - Local filtering as a safety net next to server-side filters.
 - Validate enum inputs and fail with the list of valid values.
 - Read-only by default; write tools are gated on the v2 design (explicit
-  confirm-before-send) — open an issue before investing in a write tool.
+  confirm-before-send) - open an issue before investing in a write tool.
 
 ## Design principles (please preserve)
 
@@ -69,7 +69,7 @@ Tools are registered in `src/tools.ts`. Follow the existing pattern:
    except Jobber's own API.
 3. **Least privilege.** Request only the scopes a tool needs; read over write.
 4. **Reliability engineering.** Silent token refresh, throttle-aware retry,
-   API-version pinning, and schema-drift fallback are features, not extras —
+   API-version pinning, and schema-drift fallback are features, not extras -
    don't remove them to "simplify."
 
 ## Reporting bugs
