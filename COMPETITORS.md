@@ -51,9 +51,48 @@ packages). GitHub search "jobber mcp": 17 repos, **max 5 stars**.
 - **Correct details**: account currency (₹/€/£, not hardcoded $), local
   timezone display
 
+## Demand-side evidence (Jobber community scan, Sept 2026)
+
+Three community posts found searching for AI/MCP topics:
+
+1. **Business owner running a read-only Claude↔Jobber MCP connection**,
+   posting to ask if anyone has *write access* working — "that's where it
+   would get really powerful: AI-assisted job creation, status updates,
+   dispatching." Also notes it "took some work to get running" (setup friction
+   is real). This is a literal instance of the research plan's strong-go
+   signal: *unsolicited write-access requests from businesses*.
+2. **adeocode's distribution post** (free, open-source, read-only, plain-English
+   pitch with "zero risk" safety framing). Promotes exactly our tool set plus
+   one gap: "any new job requests I haven't looked at yet?" (root `requests`
+   query exists — cheap for us to add). Their onboarding is slicker for
+   non-technical users: register an app, then type "authenticate with Jobber"
+   *inside* the assistant vs our terminal-based `npm run auth`.
+   adeocode is the most direct ACTIVE competitor on distribution — a dev shop
+   using the free OSS play as reach into home-service shops.
+3. **Lawn-care operator running a full AI ops stack around Jobber**: Zapier
+   logs every call/text/email/voicemail into a side database, an MCP server
+   lets his AI read it for a 5-minute morning briefing, AI receptionist on the
+   phone line. He wired around Jobber's API rather than through it — the
+   missing piece was the comms timeline + actions layer, not read access.
+   Notably: "It drafts the messages. I review, edit if needed, and I send" —
+   independent validation of our draft-not-send design.
+
+**Read:** the "empty niche = no scope" hypothesis is weak. Owners are asking
+for exactly this category, building workarounds themselves, and publicly
+requesting write access. The competitor graveyard looks like execution
+failure plus an unmet write-side need — not absent demand.
+
 ## Gaps competitors cover that we don't (yet)
 
-- `create_quote` write path (friendlygeorge had it; our v2 once validated)
+- `create_quote` write path (friendlygeorge had it; our v2 once validated —
+  now demand-confirmed by community post 1, which explicitly asks for write)
+- `get_new_requests` (work requests/leads — adeocode markets it; root
+  `requests` query verified in our introspection)
+- In-assistant OAuth onboarding ("type authenticate with Jobber") vs our
+  terminal `npm run auth` — matters for non-technical owners; natural fit for
+  the hosted version
+- Client comms timeline (messages/notes via `Client.messages`) — the gap
+  community post 3 wired around with a side database
 - Line-item detail on job/invoice fetch
 - Multi-tenant hosting (todah-zg) — relevant only for the hosted version later
 
