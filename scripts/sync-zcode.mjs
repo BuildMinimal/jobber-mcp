@@ -10,7 +10,14 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-const KEYS = ["JOBBER_CLIENT_ID", "JOBBER_CLIENT_SECRET", "JOBBER_ACCESS_TOKEN", "JOBBER_REFRESH_TOKEN"];
+const KEYS = [
+  "JOBBER_CLIENT_ID",
+  "JOBBER_CLIENT_SECRET",
+  "JOBBER_ACCESS_TOKEN",
+  "JOBBER_REFRESH_TOKEN",
+  "JOBBER_TIMEZONE",
+  "JOBBER_API_VERSION",
+];
 
 const envPath = join(process.cwd(), ".env");
 if (!existsSync(envPath)) {

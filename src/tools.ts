@@ -56,8 +56,34 @@ function todayUtc(): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
+/**
+ * Currency follows the Jobber account (derived from account.countryCode —
+ * the API exposes no direct currency field). The formatter is initialized
+ * lazily on the first money-formatting tool call; on failure it falls back
+ * to a plain number so tools still work.
+ */
+const COUNTRY_TO_CURRENCY: Record<string, string> = {
+  US: "USD", CA: "CAD", GB: "GBP", UK: "GBP", IE: "EUR",
+  DE: "EUR", FR: "EUR", ES: "EUR", IT: "EUR", NL: "EUR", BE: "EUR",
+  AT: "EUR", PT: "EUR", FI: "EUR", GR: "EUR", SK: "EUR", SI: "EUR",
+  LT: "EUR", LV: "EUR", EE: "EUR", HR: "EUR", CY: "EUR", LU: "EUR", MT: "EUR",
+  AU: "AUD", NZ: "NZD", IN: "INR", ZA: "ZAR", SG: "SGD", AE: "AED",
+  PH: "PHP", MY: "MYR", MX: "MXN", BR: "BRL", JP: "JPY",
+};
+
+let accountFormatter: Intl.NumberFormat | null = null;
+let accountFormatterReady = false;
+
+async function ensureCurrency(jobber: JobberClient): Promise<void> {
+  if (accountFormatterReady) return;
+  const country = await jobber.accountCountryCode();
+  const currency = country ? COUNTRY_TO_CURRENCY[country.toUpperCase()] : undefined;
+  accountFormatter = currency ? new Intl.NumberFormat("en-US", { style: "currency", currency }) : null;
+  accountFormatterReady = true;
+}
+
 const fmtMoney = (v: number | null | undefined): string =>
-  v == null ? "n/a" : `$${v.toFixed(2)}`;
+  v == null ? "n/a" : accountFormatter ? accountFormatter.format(v) : `$${v.toFixed(2)}`;
 
 const moneyNum = (v: number | null | undefined): number => v ?? 0;
 
@@ -66,15 +92,43 @@ const statusOf = (s: unknown): string => (s == null || s === "" ? "unknown" : St
 const shortDate = (iso: string | null | undefined): string =>
   iso != null ? iso.slice(0, 10) : "?";
 
-const shortStamp = (iso: string | null | undefined): string =>
-  iso != null ? `${iso.slice(0, 10)} ${iso.slice(11, 16)} UTC` : "?";
+/** Visit timestamp in the configured local timezone (or UTC when unset). */
+function stampInTz(iso: string, timezone?: string): string {
+  if (!timezone) return `${iso.slice(0, 10)} ${iso.slice(11, 16)} UTC`;
+  const dtf = new Intl.DateTimeFormat("en-GB", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  return `${dtf.format(new Date(iso))} ${timezone}`;
+}
+
+/** Calendar day of an instant in the configured local timezone (or UTC when unset). */
+function dayInTz(iso: string, timezone?: string): string {
+  if (!timezone) return iso.slice(0, 10);
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(iso));
+}
 
 /** RFC3339 timestamp for a UTC day start. */
 const isoDayStart = (d: Date): string => `${day(d)}T00:00:00Z`;
 
 /* ---------- registration ---------- */
 
-export function registerTools(server: McpServer, jobber: JobberClient, defaultPageSize: number): void {
+export function registerTools(
+  server: McpServer,
+  jobber: JobberClient,
+  defaultPageSize: number,
+  timezone?: string,
+): void {
   /* ----- search_jobs ----- */
   server.registerTool(
     "search_jobs",
@@ -166,6 +220,7 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
     },
     async (args) => {
       try {
+        await ensureCurrency(jobber);
         const data = await jobber.graphql<InvoicesData>(queries.invoices, {
           first: args.limit ?? 50,
           sort: [{ key: "DUE_DATE", direction: "DESCENDING" }],
@@ -216,6 +271,7 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
     },
     async (args) => {
       try {
+        await ensureCurrency(jobber);
         const data = await jobber.graphql<ClientData>(queries.clientById, { id: args.client_id });
         const c = data.client;
         if (!c) return fail(`No client found with id ${args.client_id}.`);
@@ -301,7 +357,7 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
 
         const rows = nodes.map(
           (v) =>
-            `${v.allDay ? day(new Date(v.startAt!)) : shortStamp(v.startAt)} — ${v.title ?? "visit"} — ` +
+            `${v.allDay ? dayInTz(v.startAt!, timezone) : stampInTz(v.startAt!, timezone)} — ${v.title ?? "visit"} — ` +
             `${statusOf(v.visitStatus)}${v.isComplete ? " (complete)" : ""} — ` +
             `job #${v.job?.jobNumber ?? "?"} ${v.job?.title ?? ""} (${v.job?.client?.name ?? "no client"})`,
         );
@@ -335,6 +391,7 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
     },
     async (args) => {
       try {
+        await ensureCurrency(jobber);
         if (args.status && !QUOTE_STATUSES.includes(args.status as never)) {
           return fail(`Invalid status "${args.status}". Valid values: ${QUOTE_STATUSES.join(", ")}`);
         }
@@ -403,6 +460,7 @@ export function registerTools(server: McpServer, jobber: JobberClient, defaultPa
     },
     async (args) => {
       try {
+        await ensureCurrency(jobber);
         const channel = args.channel ?? "email";
         const tone = args.tone ?? "friendly, professional";
         const signer = args.signer ?? "(add your signature)";

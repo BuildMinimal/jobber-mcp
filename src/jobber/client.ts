@@ -43,9 +43,26 @@ const VARIABLE_COERCION_ERROR =
 export class JobberClient {
   private accessToken: string | undefined;
   private refreshedOnce = false;
+  private countryCode?: string | null;
 
   constructor(private readonly config: Config) {
     this.accessToken = stripBearer(config.accessToken);
+  }
+
+  /** Account country (fetched once, cached) — drives currency selection. */
+  async accountCountryCode(): Promise<string | null> {
+    if (this.countryCode !== undefined) return this.countryCode;
+    try {
+      const data = await this.execute<{ account: { countryCode: string | null } | null }>(
+        `query Account { account { countryCode } }`,
+        {},
+      );
+      this.countryCode = data?.account?.countryCode ?? null;
+    } catch {
+      // non-fatal — tools fall back to a plain number format
+      this.countryCode = null;
+    }
+    return this.countryCode;
   }
 
   /**

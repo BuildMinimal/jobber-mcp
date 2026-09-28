@@ -36,6 +36,8 @@ export interface Config {
   tokenUrl: string;
   authorizeUrl: string;
   defaultPageSize: number;
+  /** Optional IANA timezone (e.g. Asia/Kolkata) for displaying visit times in local time. */
+  timezone?: string;
 }
 
 export function loadConfig(): Config {
@@ -51,6 +53,7 @@ export function loadConfig(): Config {
     tokenUrl: process.env.JOBBER_TOKEN_URL ?? `${apiOrigin}/oauth/token`,
     authorizeUrl: process.env.JOBBER_AUTHORIZE_URL ?? `${apiOrigin}/oauth/authorize`,
     defaultPageSize: clampInt(process.env.JOBBER_PAGE_SIZE, 1, 100, 25),
+    timezone: process.env.JOBBER_TIMEZONE,
   };
 }
 

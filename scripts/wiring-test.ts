@@ -32,6 +32,9 @@ const amounts = (total: string, balance: string) => ({
 // Fixture data keyed by GraphQL operationName. Dates are relative to "today"
 // so overdue/schedule logic always has something to chew on.
 const responses: Record<string, unknown> = {
+  // Non-US country on purpose: proves money formatting follows the account,
+  // not a hardcoded "$" (DE -> EUR -> €)
+  Account: { account: { countryCode: "DE" } },
   SearchJobs: {
     jobs: {
       totalCount: 3,
@@ -166,7 +169,7 @@ const { registerTools } = await import("../src/tools.js");
 
 const config = loadConfig();
 const server = new McpServer({ name: "jobber-mcp", version: "0.0.0-test" });
-registerTools(server, new JobberClient(config), config.defaultPageSize);
+registerTools(server, new JobberClient(config), config.defaultPageSize, config.timezone);
 
 const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
 await server.connect(serverTransport);
@@ -186,7 +189,7 @@ const cases: Case[] = [
   { name: "search_jobs", args: { status: "active" }, expect: "101", notExpect: "Gutter cleaning" },
   { name: "search_jobs", args: { client_id: "c1", created_after: isoDay(-2) }, expect: "Gutter cleaning", notExpect: "faucet" },
   { name: "search_jobs", args: { search: "fence" }, expect: "Backyard fence install" },
-  { name: "get_unpaid_invoices", args: {}, expect: "250.00", notExpect: "1003" },
+  { name: "get_unpaid_invoices", args: {}, expect: "€250.00", notExpect: "1003" },
   { name: "get_client_details", args: { client_id: "c1" }, expect: "Dana Smith" },
   { name: "get_client_details", args: { client_id: "nope" }, expect: "No client found", expectError: true },
   { name: "get_schedule", args: {}, expect: "Faucet repair", notExpect: "filtered by server-side range" },

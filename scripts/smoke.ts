@@ -79,6 +79,11 @@ const checks: Array<{ name: string; run: () => Promise<string> }> = [
   },
 ];
 
+const COUNTRY_TO_CURRENCY: Record<string, string> = { US: "USD", CA: "CAD", GB: "GBP", IE: "EUR", DE: "EUR", AU: "AUD", NZ: "NZD", IN: "INR" };
+const country = await jobber.accountCountryCode();
+const currency = country ? COUNTRY_TO_CURRENCY[country.toUpperCase()] ?? `(unmapped country ${country})` : "(unknown)";
+console.log(`INFO  account country: ${country ?? "n/a"} -> currency: ${currency}`);
+
 let failures = 0;
 for (const check of checks) {
   try {

@@ -130,6 +130,10 @@ export interface ClientData {
   client: ClientDetailNode | null;
 }
 
+export interface AccountData {
+  account: { countryCode: string | null } | null;
+}
+
 /** Valid values for JobFilterAttributes.status */
 export const JOB_STATUSES = [
   "requires_invoicing",
@@ -166,6 +170,14 @@ export const QUOTE_STATUSES = [
 ] as const;
 
 export const queries = {
+  account: /* GraphQL */ `
+    query Account {
+      account {
+        countryCode
+      }
+    }
+  `,
+
   searchJobs: /* GraphQL */ `
     query SearchJobs($filter: JobFilterAttributes, $searchTerm: String, $first: Int!, $after: String) {
       jobs(filter: $filter, searchTerm: $searchTerm, first: $first, after: $after) {

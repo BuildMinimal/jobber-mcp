@@ -28,6 +28,6 @@ const server = new McpServer(
   },
 );
 
-registerTools(server, new JobberClient(cfg), cfg.defaultPageSize);
+registerTools(server, new JobberClient(cfg), cfg.defaultPageSize, cfg.timezone);
 
 await server.connect(new StdioServerTransport());
