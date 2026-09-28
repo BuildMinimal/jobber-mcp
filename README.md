@@ -3,7 +3,7 @@
 MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobber** (field/home services business software), built on Jobber's open GraphQL API.
 
 - API docs: https://developer.getjobber.com (open self-serve GraphQL API, free developer program)
-- Research: see `../mcp-deep-dive.md`
+
 - Status: **read-only v1, verified against the live schema** (API version `2026-05-12`, Sept 2026)
 
 ## Tools (read-only v1)
@@ -33,7 +33,7 @@ MCP server connecting AI assistants (Claude, ChatGPT, Gemini, Copilot) to **Jobb
      "mcpServers": {
        "jobber": {
          "command": "node",
-         "args": ["D:/coding/mcp/jobber-mcp/dist/src/index.js"],
+         "args": ["/absolute/path/to/jobber-mcp/dist/src/index.js"],
          "env": {
            "JOBBER_ACCESS_TOKEN": "<from npm run auth>",
            "JOBBER_REFRESH_TOKEN": "<optional, enables silent renewal>",
